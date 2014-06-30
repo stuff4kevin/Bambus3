@@ -1,14 +1,22 @@
+import argparse
 import sys
 import os
+
 def main():
     
-    fileName = sys.argv[1]
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-s", "--samF", default = True, help="input is sam file; default True")
+
+    parser.add_argument("fileName", type = str)
+
+    args = parser.parse_args()
+    fileName = args.fileName
 
     if (os.path.isfile(fileName) == False):
          sys.exit(fileName + " doesn't not exist")
 
     ext = os.path.splitext(fileName)[-1].lower()
-
     if (ext != ".sam"):
          sys.exit(fileName + " is not a SAM file.")
 
@@ -47,11 +55,11 @@ def main():
         if (i+1) <= len(allReads) and i%2 == 0:
             if allReads[i][0] != '*' and  allReads[i+1][0] != '*':
                 # only adds the fragments that have both reads mapped to a contig
-                
                 listFrag.append(allReads[i])
                 listFrag.append(allReads[i+1])
                 
                 numWholeFrag = numWholeFrag + 1
+
             else:
                 numPartMap = numPartMap + 1
 
