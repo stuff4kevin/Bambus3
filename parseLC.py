@@ -1,4 +1,4 @@
-B0;136;0cimport argparse
+import argparse
 import sys
 import os
 import re
@@ -26,68 +26,76 @@ def main():
           else:
                linkedContig[pairing].add((rowList[3], rowList[4]))
 
-     sortedLC = {}
+     sortedSE = {}
+     combineFirst = {}
+     
      for element in linkedContig:
-          # labels start and ends
+          # labels start and ends and by set
           gMin = [ x[0]+".s" for x in list(linkedContig[element])]
           gMax = [ y[1]+".e" for y in list(linkedContig[element])]
-          
      
           for i in range(len(gMin)):
                # labels each link
                gMin[i] = gMin[i]+"."+str(i+1)
                gMax[i] = gMax[i]+"."+str(i+1)
           
-
+          gMin = sorted(gMin, key = lambda x: int(x.split(".")[0]))
+          gMax = sorted(gMax, key = lambda x: int(x.split(".")[0]))
+          
           # sorts by the actually gap value
-          sortMin = sorted(gMin, key = lambda x: int(x.split(".")[0]))
-          sortMax = sorted(gMax, key = lambda x: int(x.split(".")[0]))
+          combineFirst[element] = sorted(gMin+gMax, key = lambda x: int(x.split(".")[0]))
+          sortedSE[element] = [gMin, gMax]
+     groupCover = {}
+     for element in combineFirst:
+ #         print element
+          groupCover[element] = set([])
+          for i in range(len(combineFirst[element])):
+
+               agreeCover = []
                
-          # Now a dictionary has a list of starts and list of ends
-          sortedLC[element] = [sortMin, sortMax]
-     
-     groupOfCoverage = {}
-     for element in sortedLC:
-          for i in range(len( sortedLC[element])):
-               temp = sortedLC[element]
-          
-               #should this be here or before the for loop
-
-               coverageLow = temp[0][-1]
-          
-               coverageHigh = temp[1][i]
-          
-               #len temp[0] and temp[1] are the same
-               agreeGaps = []
-               if (i+1) <= len(temp[0]):
-
-                    # _____________           Overlap on the right
-                    #       ________________
-                    # if s2 is >= s1 / e1 is main, s2 is main
-
-
-                    #    _____________        overlap on the left
-                    #___________
-                    # if s2 <= s1 and e2 <= e1 / e2 is main, s1 is main
-
-
-                    #__________________       complete overlap
-                    #     ________
-                    # if s2 >= s1 and e2 <= e1 / e2 is main, s2 is main
-
-
-                    # __________ 
-                    #             __________  no overlap >>> new set of agreeing gaps
-                    #
-
-
-                    #
-                    #
-
-                    if temp[0][i+1].split"."[0] > temp[0][i].split"."[0]:
-                         coverageLow = temp[0][i+1].split"."[0]
-                    if temp[1][i+1].split"."[0] > temp[i][i].split"."[0]:
-                         coverageHigh = temp[i][i+1].split"."[0]
-
+               c = i
+               while  c < len(combineFirst[element])-1:
+                   # print "len is " + str(len(combineFirst[element])-1)
+    #                print "c is " + str(c)
+    #               if c == len(combineFirst[element]) or combineFirst[element][c].split(".")[-1] == agreeCover[0].split(".")[-1]:
+     #                    agreeCover.append(combineFirst[element][c])
+      #                   groupCover[element].append(agreeCover)
+               #          print agreeCover
+       #                  agreeCover = [combineFirst[element][c+1]]
+        #                 c = c+ 1
                     
+                         
+         #           if combineFirst[element][c].split(".")[-1] != agreeCover[0].split(".")[-1]:
+          #               agreeCover.append(combineFirst[element][c])
+           #              c = c+ 1
+                    
+                    if combineFirst[element][c].split(".")[-2] == 's':
+                         agreeCover.append(combineFirst[element][c])
+                         c=c+ 1
+                    if  combineFirst[element][c].split(".")[-2] == 'e':
+                         
+                         agreeCover = tuple(agreeCover)
+                         if agreeCover != ():
+                              groupCover[element].add(agreeCover)
+                         
+                         agreeCover = []
+                         c =c+ 1
+                         
+#                    groupCover[element] = list(groupCover[element])
+     newFile = open('combineFirst', 'w')
+     for element in combineFirst:
+ #         newFile.write("\t".join(element))      
+  #        newFile.write("\t".join(combineFirst[element]))
+   #       newFile.write("\n")
+          
+
+          gclist = list(groupCover[element])
+     
+          for item in gclist:
+               newList = []
+               for x in item:
+                    #item is a tuple
+                    index = sortedSE[element][0].index(x) 
+                    newList.append((sortedSE[element][0][index].split(".")[0],sortedSE[element][1][index].split(".")[0])), 
+          print element.split("+")[0] + "\t" + element.split("+")[1] + "\t " + newList[-1][0] + "\t" + newList[0][-1] + "\t" + str(len(newList)) + "\t" + str(newList)
 main()

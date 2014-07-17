@@ -20,6 +20,10 @@ def main():
     insertSize = args.insert
     sd = args.stDev
     outPut = args.outPutName
+    print fileName
+    print insertSize
+    print sd
+    print outPut
     if (os.path.isfile(fileName) == False):
          sys.exit(fileName + " doesn't not exist")
 
