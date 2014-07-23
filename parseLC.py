@@ -1,3 +1,4 @@
+
 import argparse
 import sys
 import os
@@ -15,87 +16,73 @@ def main():
      file = open(fileName, 'r')
      linkedContig = {}
      
-     counter = 0
-     #extracts the gMin and gMac 
+     #extracts the gMin and gMax 
      for line in file:
-          counter = counter +1
+          
+          
           rowList = line.split()
           pairing = rowList[0]+"+"+rowList[1]
+          min = rowList[3]+"."+rowList[2]+"."+"min"
+          max = rowList[4]+"."+rowList[2]+"."+"max"
           if pairing not in linkedContig:
-               linkedContig[pairing] = set([(rowList[3], rowList[4])])
+               linkedContig[pairing] = set([(min,max)])
           else:
-               linkedContig[pairing].add((rowList[3], rowList[4]))
+               linkedContig[pairing].add((min,max))
 
      sortedSE = {}
      combineFirst = {}
      
      for element in linkedContig:
           # labels start and ends and by set
-          gMin = [ x[0]+".s" for x in list(linkedContig[element])]
-          gMax = [ y[1]+".e" for y in list(linkedContig[element])]
-     
-          for i in range(len(gMin)):
-               # labels each link
-               gMin[i] = gMin[i]+"."+str(i+1)
-               gMax[i] = gMax[i]+"."+str(i+1)
-          
+          gMin = [ x[0] for x in linkedContig[element]]
+          gMax = [ y[1] for y in linkedContig[element]]
           gMin = sorted(gMin, key = lambda x: int(x.split(".")[0]))
+          
           gMax = sorted(gMax, key = lambda x: int(x.split(".")[0]))
           
           # sorts by the actually gap value
           combineFirst[element] = sorted(gMin+gMax, key = lambda x: int(x.split(".")[0]))
           sortedSE[element] = [gMin, gMax]
      groupCover = {}
-     for element in combineFirst:
- #         print element
-          groupCover[element] = set([])
-          for i in range(len(combineFirst[element])):
+     #counter = 0
+     for thing in combineFirst:
+          #counter = counter + 1
+          groupCover[thing] = []
+          for i in range(len(combineFirst[thing])):
 
                agreeCover = []
                
                c = i
-               while  c < len(combineFirst[element])-1:
-                   # print "len is " + str(len(combineFirst[element])-1)
-    #                print "c is " + str(c)
-    #               if c == len(combineFirst[element]) or combineFirst[element][c].split(".")[-1] == agreeCover[0].split(".")[-1]:
-     #                    agreeCover.append(combineFirst[element][c])
-      #                   groupCover[element].append(agreeCover)
-               #          print agreeCover
-       #                  agreeCover = [combineFirst[element][c+1]]
-        #                 c = c+ 1
-                    
-                         
-         #           if combineFirst[element][c].split(".")[-1] != agreeCover[0].split(".")[-1]:
-          #               agreeCover.append(combineFirst[element][c])
-           #              c = c+ 1
-                    
-                    if combineFirst[element][c].split(".")[-2] == 's':
-                         agreeCover.append(combineFirst[element][c])
-                         c=c+ 1
-                    if  combineFirst[element][c].split(".")[-2] == 'e':
+               while  c <= len(combineFirst[thing])-1:
+                    if  c == len(combineFirst[thing]) -1 or combineFirst[thing][c].split(".")[-1] == "max":
                          
                          agreeCover = tuple(agreeCover)
                          if agreeCover != ():
-                              groupCover[element].add(agreeCover)
+                              groupCover[thing].append(agreeCover)
                          
                          agreeCover = []
                          c =c+ 1
-                         
-#                    groupCover[element] = list(groupCover[element])
+                    elif combineFirst[thing][c].split(".")[-1] == "min":
+                         agreeCover.append(combineFirst[thing][c])
+                         c=c+ 1
+
+
+          groupCover[thing] = set(groupCover[thing])
      newFile = open('combineFirst', 'w')
-     for element in combineFirst:
- #         newFile.write("\t".join(element))      
-  #        newFile.write("\t".join(combineFirst[element]))
-   #       newFile.write("\n")
+     for stuff in combineFirst:
+          newFile.write(stuff)  
+          newFile.write("\n")
+          newFile.write(" ".join(combineFirst[stuff]))
+          newFile.write("\n")
           
 
-          gclist = list(groupCover[element])
+          gclist = list(groupCover[stuff])
      
           for item in gclist:
                newList = []
                for x in item:
                     #item is a tuple
-                    index = sortedSE[element][0].index(x) 
-                    newList.append((sortedSE[element][0][index].split(".")[0],sortedSE[element][1][index].split(".")[0])), 
-          print element.split("+")[0] + "\t" + element.split("+")[1] + "\t " + newList[-1][0] + "\t" + newList[0][-1] + "\t" + str(len(newList)) + "\t" + str(newList)
+                    index = sortedSE[stuff][0].index(x) 
+                    newList.append((sortedSE[stuff][0][index].split(".")[0],sortedSE[stuff][1][index].split(".")[0])), 
+          print stuff.split("+")[0] + "\t" + stuff.split("+")[1] + "\t " + newList[-1][0] + "\t" + newList[0][-1] + "\t" + str(len(newList)) + "\t" + str(newList)
 main()
