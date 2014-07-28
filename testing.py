@@ -82,35 +82,43 @@ le")
 
      pos = nx.spring_layout(G)
      i = 0
-     colorList = ['w','y','c','g','b','m','r','k']
-     for list in all:
+     colorList = ['r','k','c','y','b','m','w','g']
+     for j in range(len(all)):
           
          # pos = nx.spring_layout(graphList[i])
           
-          #nx.draw_networkx_nodes(graphList[i],pos, node_size = 20)          
-          nx.draw_networkx_edges(G, pos, edge_color = colorList[i])
-          i = i + 1
+          nx.draw_networkx_nodes(graphList[i],pos, node_size = 1, node_color = 'r')          
+          name = 'G'+str(j+1)
+          print name
+          nx.draw_networkx_edges(graphList[j], pos, edge_color = colorList[j])
      
+
+     print "Number of Nodes: " + str(len(G.nodes()))
+     print "Number of Connected Components: " + str(nx.number_connected_components(G))
+                                     
      plt.savefig("graphTotal.png")
+
      plt.clf()
-     print len(G1.edges())
-     print G1.edges()
-     print len(G2.edges())
-     print G2.edges()
-     print len(G3.edges())
-     print G3.edges()
-     print len(G4.edges())
-     print G4.edges()
-     print len(G5.edges())
-     print G5.edges()
-     print len(G6.edges())
-     print G6.edges()
-     print len(G7.edges())
-     print G7.edges()
-     print len(G8.edges())
-     print G8.edges()
-     print len(G.edges())
-     print G.edges()
+
+#     print len(G1.edges())
+#     print G1.edges()
+#     print len(G2.edges())
+#     print G2.edges()
+#     print len(G3.edges())
+#     print G3.edges()
+#     print len(G4.edges())
+#     print G4.edges()
+#     print len(G5.edges())
+#     print G5.edges()
+#     print len(G6.edges())
+#     print G6.edges()
+#     print len(G7.edges())
+#     print G7.edges()
+#     print len(G8.edges())
+#     print G8.edges()
+#     print len(G.edges())
+#     print G.edges()
+
 
      nx.draw(G1, pos = nx.spring_layout(G1), nos_size = 20)
      plt.savefig("graph1.png")
