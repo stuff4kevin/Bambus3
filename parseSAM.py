@@ -13,7 +13,7 @@ def main():
     parser.add_argument("fileName", type = str, help= "Name of the input SAM file")
     parser.add_argument("insert", type=int, nargs = '?', action = 'store', help = "user given insert size")
     parser.add_argument("stDev", nargs = '?', action='store', default=10, help = "Standard deviation")
-    parser.add_argument("outPutName", type = str, help="name of the output file")
+    parser.add_argument("outPutName", type = str,action = 'store', help="name of the output file")
 
     args = parser.parse_args()
     fileName = args.fileName
@@ -23,6 +23,9 @@ def main():
     print fileName
     print insertSize
     print sd
+    if outPut == None:
+        outPut = "linkedContigs"
+
     print outPut
 
     # searches for the imput file and checks if its is a SAM file
@@ -118,16 +121,23 @@ def main():
                     pos2 = allReads[i][4]
                     pos1 = allReads[i+1][4]
                     extraLen = allReads[i][3]
+                    temp = allReads[i][4]
+                    allReads[i][4] = allReads[i+1][4]
+                    allReads[i+1][4] = temp
                 total = total +abs(int(pos1)-int(pos2))+int(extraLen)
-
+                
                 #counts the number of InsertSize calculated and later used for 
                 #average
                 numIS = numIS + 1
 
             if (contig1 != '*' and contig2 != '*') or ( allReads[i][1] != "remove" and allReads[i+1][1] != "remove"):
                 #only adds the fragments that have both reads mapped to a contig
-                listFrag.append(allReads[i])
-                listFrag.append(allReads[i+1])
+                if allReads[i][6] == "for":
+                    listFrag.append(allReads[i])
+                    listFrag.append(allReads[i+1])
+                elif allReads[i][6] == "rev":
+                    listFrag.append(allReads[i+1])
+                    listFrag.append(allReads[i])
 
                 # Number of Whole Fragments are kept track of
                 numWholeFrag = numWholeFrag + 1
@@ -154,13 +164,13 @@ def main():
     linkedContigs = open(outPut+'.txt', 'w')
     numLinkContig = 0
     for i in range(len(listFrag)):
-         if (i+1) <= len(listFrag) and i%2 == 0:
-             if str(listFrag[i][0]) != str(listFrag[i+1][0]):
-                 numLinkContig = numLinkContig + 1               
-                 gap = int(avgIS)-int(listFrag[i][1])-int(listFrag[i+1][1])
-                 
-                 linkedContigs.write("\t".join([listFrag[i][0],listFrag[i+1][0],listFrag[i+1][2][:-2], str(gap -int(sd)*avgIS/100), str(gap + int(sd)*avgIS/100)]))
-                 linkedContigs.write("\t".join("\n"))
+        if (i+1) <= len(listFrag) and i%2 == 0:
+            if str(listFrag[i][0]) != str(listFrag[i+1][0]):
+                numLinkContig = numLinkContig + 1               
+                gap = int(avgIS)-int(listFrag[i][1])-int(listFrag[i+1][1])
+                
+                linkedContigs.write("\t".join([listFrag[i][0],listFrag[i+1][0],listFrag[i+1][2][:-2], str(gap -int(listFrag[i+1][3])-int(sd)*avgIS/100), str(gap -int(listFrag[i+1][3])+ int(sd)*avgIS/100)]))
+                linkedContigs.write("\t".join("\n"))
              
     print str(numLinkContig) + " number of reads bridging contigs"          
     linkedContigs.close()
