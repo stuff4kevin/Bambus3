@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 import os
-import re
 
 def main():
 
@@ -41,56 +40,45 @@ le")
 
      for line in file:
           rowList = line.split("\t")
+     
           numSup = int(rowList[4])
           contig1 = int(rowList[0])
           contig2 = int(rowList[1])
-     
+          weight = int(rowList[2]) + int(rowList[3]) / 2
+
           if numSup <= 5:
-               G1.add_edge(rowList[0],rowList[1])
+               G1.add_edge(rowList[0],rowList[1], weight  = weight)
                lessFive.append(G.add_edge(rowList[0],rowList[1]))
-          
           elif numSup > 5 and numSup <= 10:
-               G2.add_edge(rowList[0],rowList[1])
+               G2.add_edge(rowList[0],rowList[1], weight  = weight)
                lessTen.append(G.add_edge(rowList[0],rowList[1]))
-               
           elif numSup > 10 and numSup <= 20:
-               G3.add_edge(rowList[0],rowList[1])
+               G3.add_edge(rowList[0],rowList[1], weight  = weight)
                less20.append(G.add_edge(rowList[0],rowList[1]))      
           elif numSup > 20 and numSup <= 30:
-               G4.add_edge(rowList[0],rowList[1])
+               G4.add_edge(rowList[0],rowList[1], weight  = weight)
                less30.append(G.add_edge(rowList[0],rowList[1]))
           elif numSup > 30 and numSup <= 40:
                
-               G5.add_edge(rowList[0],rowList[1])
+               G5.add_edge(rowList[0],rowList[1], weight  = weight)
                less40.append(G.add_edge(rowList[0],rowList[1]))
           elif numSup > 40 and numSup <= 50:
-               G6.add_edge(rowList[0],rowList[1])
+               G6.add_edge(rowList[0],rowList[1], weight  = weight)
                less50.append(G.add_edge(rowList[0],rowList[1]))
           elif numSup > 50 and numSup <= 60:
-               G7.add_edge(rowList[0],rowList[1])
+               G7.add_edge(rowList[0],rowList[1], weight  = weight)
                less60.append(G.add_edge(rowList[0],rowList[1]))
           elif numSup > 60:
-               G8.add_edge(rowList[0],rowList[1])
+               G8.add_edge(rowList[0],rowList[1], weight  = weight)
                great60.append(G.add_edge(rowList[0],rowList[1]))
      all = [lessFive, lessTen, less20, less30, less40 ,less50, less60, great60]
 
-     print 
-     total = 0
-     for graphs in all:
-
-          total = total + len(graphs)
-
      pos = nx.spring_layout(G)
-     i = 0
-     colorList = ['r','k','c','y','b','m','w','g']
+     nx.draw_networkx_nodes(G, pos, node_size = 2, node_color = 'r')
+     colorList = ['#C0C0C0','k','m','y','c','g','k','r']
+     
      for j in range(len(all)):
-          
-         # pos = nx.spring_layout(graphList[i])
-          
-          nx.draw_networkx_nodes(graphList[i],pos, node_size = 1, node_color = 'r')          
-          name = 'G'+str(j+1)
-          print name
-          nx.draw_networkx_edges(graphList[j], pos, edge_color = colorList[j])
+          nx.draw_networkx_edges(graphList[j], pos, edge_color = colorList[j] )
      
 
      print "Number of Nodes: " + str(len(G.nodes()))
@@ -118,31 +106,5 @@ le")
 #     print G8.edges()
 #     print len(G.edges())
 #     print G.edges()
-
-
-     nx.draw(G1, pos = nx.spring_layout(G1), nos_size = 20)
-     plt.savefig("graph1.png")
-     plt.clf()
-     nx.draw(G2, pos = nx.spring_layout(G2))
-     plt.savefig("graph2.png")
-     plt.clf()
-     nx.draw(G3, pos = nx.spring_layout(G3))
-     plt.savefig("graph3.png")
-     plt.clf()
-     nx.draw(G4, pos = nx.spring_layout(G4))
-     plt.savefig("graph4.png")
-     plt.clf()
-     nx.draw(G5, pos = nx.spring_layout(G5))
-     plt.savefig("graph5.png")
-     plt.clf()
-     nx.draw(G6, pos = nx.spring_layout(G6))
-     plt.savefig("graph6.png")
-     plt.clf()
-     nx.draw(G7, pos = nx.spring_layout(G7))
-     plt.savefig("graph7.png")
-     plt.clf()
-     nx.draw(G8, pos = nx.spring_layout(G8))
-     plt.savefig("graph8.png")
-
 main()
                     
